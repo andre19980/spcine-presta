@@ -108,7 +108,7 @@ def generate_pdf_from_dataframe(elements):
   pdf.image(name="logo_spcine-principal.png", w=image_width, x=(pdf.w - image_width) / 2)
 
   # Cabeçalho
-  nome_projeto, nome_proponente, num_contrato, edital, relator = elements[12]
+  nome_projeto, nome_proponente, num_contrato, edital, analista = elements[12]
   pdf = set_text(pdf)
   pdf.cell(w=None, h=None, text=f"**Nome do projeto:** {nome_projeto}", markdown=True)
   pdf.ln(5)
@@ -118,7 +118,7 @@ def generate_pdf_from_dataframe(elements):
   pdf.ln(5)
   pdf.cell(w=None, h=None, text=f"**Edital/Linha:** {edital}", markdown=True)
   pdf.ln(5)
-  pdf.cell(w=None, h=None, text=f"**Relator Spcine:** {relator}", markdown=True)
+  pdf.cell(w=None, h=None, text=f"**Analista Spcine:** {analista}", markdown=True)
   pdf.ln(10)
 
   # Conciliação Bancária

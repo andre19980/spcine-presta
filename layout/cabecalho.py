@@ -22,18 +22,18 @@ def cabecalho(wb, file):
   nome_proponente = df.iloc[1, 1]
   num_contrato = df.iloc[2, 1]
   edital = df.iloc[3, 1] if pd.notna(df.iloc[3, 1]) else '-'
-  relator = st.user.name
+  analista = st.user.name
 
   st.markdown(f"**Nome do projeto:** {nome_projeto}")
   st.markdown(f"**Nome do proponente:** {nome_proponente}")
   st.markdown(f"**Nº do contrato:** {num_contrato}")
   st.markdown(f"**Edital/Linha:** {edital}")
-  st.markdown(f"**Relator Spcine** {relator}")
+  st.markdown(f"**Analista Spcine:** {analista}")
 
   return [
     nome_projeto,
     nome_proponente,
     num_contrato,
     edital,
-    relator,
+    analista,
   ]
