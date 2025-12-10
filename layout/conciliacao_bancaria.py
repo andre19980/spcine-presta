@@ -45,7 +45,15 @@ def conciliacao_bancaria(wb, file):
   st.subheader("Verificações")
   st.markdown("Verificação de fontes de receita")
 
-  fontes_receita = format_df_cb(df_cb[df_cb["TRANSFERÊNCIAS"].notna()], False)
+  visible_cols = ['DATA DE PAGAMENTO', 'IDENTIFICAÇÃO BANCÁRIA', 'FAVORECIDO', 'TRANSFERÊNCIAS']
+  not_na_transferencias = df_cb[df_cb["TRANSFERÊNCIAS"].notna()]
+  fontes_receita = format_df(
+    not_na_transferencias[visible_cols],
+    show_total=False,
+    date_cols=['DATA DE PAGAMENTO'],
+    currency_cols=['TRANSFERÊNCIAS'],
+  )
+
   styled_fontes_receita = fontes_receita.style.apply(
     style_df,
     axis=1
