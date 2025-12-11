@@ -11,6 +11,11 @@ from layout.demonstrativo_orcamentario import demonstrativo_orcamentario
 from layout.analise import analise
 from functions.utils import generate_pdf_from_dataframe
 
+st.set_page_config(
+  page_title="SpcinePresta",
+  layout="wide"
+)
+
 def main_app():
   uploaded_file = st.file_uploader("Escolha um arquivo .xlsx", type=["xlsx"])
 
