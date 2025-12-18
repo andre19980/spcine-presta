@@ -22,7 +22,6 @@ def relacao_pagamentos(wb, file):
     'CÓDIGO DE VERIFICAÇÃO ou CHAVE DE ACESSO': str,
     'DATA DE EMISSÃO': str, # TODO: veridicar e definir regra pra dado faltante
     'DATA DE PAGAMENTO': 'datetime64[ns]',
-    'IDENTIFICAÇÃO BANCÁRIA (Exemplo: TED XXX.XXX)': str,        
     'VALOR': 'float64',
     'ISS (em R$)': 'int64',
     'MUNICIPIO': str,
@@ -35,7 +34,7 @@ def relacao_pagamentos(wb, file):
     skiprows=HEADER_ROW - 1,
     header=0,
     nrows=nrows,
-    usecols="A:L",
+    usecols="A:K",
     dtype=dtypes_rp
   )
 

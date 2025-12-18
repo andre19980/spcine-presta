@@ -67,7 +67,7 @@ def handle_file(file):
     st.download_button(
       label="Download PDF",
       data=generate_pdf_from_dataframe(elements),
-      file_name="file_name.pdf",
+      file_name=f"{cabecalho_vars[0]}-spcine.pdf",
       mime="application/pdf",
       type="primary"
     )

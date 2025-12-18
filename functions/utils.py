@@ -3,10 +3,12 @@ import numpy as np
 import re
 from fpdf import FPDF
 from fpdf.fonts import FontFace
+from functions.formatters import brl_to_float
 
-POSITIVE_COLOR = (193, 229, 252)
+POSITIVE_COLOR = (0, 128, 0)
 NEGATIVE_COLOR = (255, 0, 0)
 negative_currency_pattern = r"R\$ -\d*.?\d+,\d+"
+positive_currency_pattern = r"R\$ (?:[1-9]\d{0,2}(?:\.\d{3})*),\d{2}"
 
 def style_df(row):
   if row.name == 'Total':
@@ -16,6 +18,25 @@ def style_df(row):
   vmatch = np.vectorize(lambda x: bool(re.match(negative_currency_pattern, x)))
 
   return np.where(vmatch(np_row), f"color: red;", f"color: rgb(49, 51, 63);")
+
+def style_analise_df(row):
+  if row.name == 'Total':
+    return np.repeat(f"background-color: rgb(248, 249, 251)", len(row))
+
+  np_row = row.to_numpy()
+  vmatch = np.vectorize(lambda x: bool(re.match(negative_currency_pattern, x)))
+  styles_np = np.where(vmatch(np_row), f"color: red;", f"color: rgb(49, 51, 63);")
+
+  variacao = brl_to_float(np_row[3])
+
+  if not variacao:
+    return styles_np
+  elif variacao > 0:
+    styles_np[4] = f"color: green;"
+  else:
+    styles_np[4] = f"color: red;"
+
+  return styles_np
 
 def style_doc_error(col):
   return np.repeat(f"color: red;", len(col))
@@ -55,6 +76,15 @@ def create_pdf_table(pdf, dataframe, width=None, align='center', highlight_col=N
           pdf.set_text_color(*NEGATIVE_COLOR)
         else:
           pdf.set_text_color(49, 51, 63)
+
+        # GAMBIARRA: tratamento para estilização da coluna "Desvio" (index 4) da tabela "Demonstrativo Orçamentário x Relação de Pagamentos"
+        if 'Desvio' in COLUMNS[0] and i == 4:
+          if re.match(negative_currency_pattern, data_row[3]):
+            pdf.set_text_color(*NEGATIVE_COLOR)
+          elif re.match(positive_currency_pattern, data_row[3]):
+            pdf.set_text_color(*POSITIVE_COLOR)
+          else:
+            pdf.set_text_color(49, 51, 63)
 
         if highlight_col != None and highlight_col == i:
           pdf.set_text_color(*highlight_color)
@@ -108,7 +138,7 @@ def generate_pdf_from_dataframe(elements):
   pdf.image(name="logo_spcine-principal.png", w=image_width, x=(pdf.w - image_width) / 2)
 
   # Cabeçalho
-  nome_projeto, nome_proponente, num_contrato, edital, analista = elements[12]
+  nome_projeto, nome_proponente, num_contrato, edital, analista = elements[11]
   pdf = set_text(pdf)
   pdf.cell(w=None, h=None, text=f"**Nome do projeto:** {nome_projeto}", markdown=True)
   pdf.ln(5)
@@ -209,28 +239,29 @@ def generate_pdf_from_dataframe(elements):
   pdf.ln(7)
 
   pdf = set_text(pdf)
-  pdf.cell(w=None, h=None, text='Valores por rubrica na Relação de Pagamentos')
-  pdf.ln(7)
-  pdf = create_pdf_table(pdf, elements[9])
-  pdf.ln(7)
-
-  pdf = set_text(pdf)
   pdf.cell(w=None, h=None, text='Cruzamento das planilhas "Demonstrativo Orçamentário" e "Relação de Pagamentos"')
   pdf.ln(7)
-  pdf = create_pdf_table(pdf, elements[10])
+  pdf = create_pdf_table(pdf, elements[9])
+  pdf = set_caption(pdf)
+  pdf.ln(3)
+  pdf.cell(w=None, h=None, text='[1] ORÇAMENTO EXECUTADO corresponde à coluna *VALOR* de Relação de Pagamentos')
+  pdf.ln(3)
+  pdf.cell(w=None, h=None, text='[2] Variação = ORÇAMENTO APROVADO [Demonstrativo Orçamentário] - ORÇAMENTO EXECUTADO')
   pdf.ln(7)
 
   pdf = set_subheader(pdf)
   pdf.cell(w=None, h=None, text='Balanço Geral')
   pdf.ln(7)
-  pdf = create_pdf_table(pdf, elements[11])
+  pdf = create_pdf_table(pdf, elements[10])
   pdf = set_caption(pdf)
   pdf.ln(3)
   pdf.cell(w=None, h=None, text='[1] Valor de fomento = Transferências + Aplicações [Conciliação Bancária]')
   pdf.ln(3)
   pdf.cell(w=None, h=None, text='[2] Valor Total [Relação de Pagamentos]')
   pdf.ln(3)
-  pdf.cell(w=None, h=None, text='[3] Valor possível de devolução = Valor de Fomento - Pagamentos [Conciliação Bancária]')
+  pdf.cell(w=None, h=None, text='[3] Devolução potencial = Valor de Fomento - Pagamentos [Conciliação Bancária]')
+  pdf.ln(3)
+  pdf.cell(w=None, h=None, text='[4] Relação de Execução Orçamentária = Valor Executado / Aporte Spcine (se maior que 100%, houve estouro de orçamento)')
   pdf.ln(3)
 
   return bytes(pdf.output())

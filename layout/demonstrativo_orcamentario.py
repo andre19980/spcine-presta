@@ -17,9 +17,6 @@ def demonstrativo_orcamentario(wb, file):
   dtypes_do = {
     'RUBRICA': str,
     'ORÇAMENTO APROVADO': 'float64',
-    'ORÇAMENTO REALIZADO': 'float64',
-    'VARIAÇÃO': 'float64',
-    'JUSTIFICATIVA PARA VARIAÇÃO': str
   }
 
   df_do = pd.read_excel(
@@ -28,15 +25,15 @@ def demonstrativo_orcamentario(wb, file):
     skiprows=HEADER_ROW - 1,
     header=0,
     nrows=nrows,
-    usecols="A:E",
+    usecols="A:B",
     dtype=dtypes_do
   )
 
   formatted_df_do = format_df(
     df_do,
     show_total=True,
-    currency_cols=['ORÇAMENTO APROVADO', 'ORÇAMENTO REALIZADO', 'VARIAÇÃO'],
-    columns_to_sum=['ORÇAMENTO APROVADO', 'ORÇAMENTO REALIZADO', 'VARIAÇÃO']
+    currency_cols=['ORÇAMENTO APROVADO'],
+    columns_to_sum=['ORÇAMENTO APROVADO']
   )
 
   styled_df_do = formatted_df_do.style.apply(

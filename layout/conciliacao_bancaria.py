@@ -7,14 +7,13 @@ from functions.utils import style_df
 
 def conciliacao_bancaria(wb, file):
   # Conciliação Bancária
-  ws_cb = wb["Conciliação bancária"]
+  ws_cb = wb["Conciliação Bancária"]
 
   HEADER_ROW, LAST_ROW = get_range("data de pagamento", "total", ws_cb)
   nrows = LAST_ROW - HEADER_ROW - 1
 
   dtypes_cb = {
     'DATA DE PAGAMENTO': 'datetime64[ns]',
-    'IDENTIFICAÇÃO BANCÁRIA': str,
     'FAVORECIDO': str,
     'TRANSFERÊNCIAS': 'float64',
     'APLICAÇÕES / RESGATES': 'float64',
@@ -25,11 +24,11 @@ def conciliacao_bancaria(wb, file):
 
   df_cb = pd.read_excel(
     file,
-    sheet_name="Conciliação bancária",
+    sheet_name="Conciliação Bancária",
     skiprows=HEADER_ROW - 1,
     header=0,
     nrows=nrows,
-    usecols="A:H",
+    usecols="A:G",
     dtype=dtypes_cb
   )
 
@@ -45,7 +44,7 @@ def conciliacao_bancaria(wb, file):
   st.subheader("Verificações")
   st.markdown("Verificação de fontes de receita")
 
-  visible_cols = ['DATA DE PAGAMENTO', 'IDENTIFICAÇÃO BANCÁRIA', 'FAVORECIDO', 'TRANSFERÊNCIAS']
+  visible_cols = ['DATA DE PAGAMENTO', 'FAVORECIDO', 'TRANSFERÊNCIAS']
   not_na_transferencias = df_cb[df_cb["TRANSFERÊNCIAS"].notna()]
   fontes_receita = format_df(
     not_na_transferencias[visible_cols],

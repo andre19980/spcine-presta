@@ -7,6 +7,15 @@ def format_currency(x):
     return ""
   return f"R$ {x:,.2f}".replace(",", "TEMP").replace(".", ",").replace("TEMP", ".")
 
+def brl_to_float(brl_string):
+  if not brl_string:
+    return None
+  
+  cleaned_string = brl_string.replace('R$', '').replace('.', '').replace(',', '.').strip()
+
+  return float(cleaned_string)
+
+
 def format_percentage(s):
   if (re.match(float_to_percentage_pattern, s)):
     float_value = float(s)
