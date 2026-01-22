@@ -1,8 +1,6 @@
 secrets.toml
 
 **/*.pyc
-__pycache__/
-*.py[cod]
 
 .venv/
 venv/
