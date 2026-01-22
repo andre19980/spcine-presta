@@ -1,6 +1,8 @@
 import streamlit as st
 import numpy as np
+import pandas as pd
 import re
+import io
 from fpdf import FPDF
 from fpdf.fonts import FontFace
 from functions.formatters import brl_to_float
@@ -265,3 +267,20 @@ def generate_pdf_from_dataframe(elements):
   pdf.ln(3)
 
   return bytes(pdf.output())
+
+def generate_excel_file(df):
+  buffer = io.BytesIO()
+
+  with pd.ExcelWriter(buffer, engine='xlsxwriter') as writer:
+    df.to_excel(writer, index=False, sheet_name='Conciliação Bancária')
+    writer.close()
+
+    st.space(size="large")
+    with st.container(horizontal=True, horizontal_alignment='center'):
+      st.download_button(
+        label="Download",
+        data=buffer,
+        file_name="conciliacao_bancaria.xlsx",
+        mime='mime="application/vnd.ms-excel"',
+        type="primary"
+      )
