@@ -8,4 +8,4 @@ def login_screen():
   st.subheader("Por favor, faça o login.", text_alignment="center")
 
   with st.container(horizontal=True, horizontal_alignment="center"):
-    st.button("Login com Microsoft", on_click=st.login)
+    st.button("Login", on_click=st.login)
